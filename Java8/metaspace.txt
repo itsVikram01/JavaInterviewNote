@@ -1,0 +1,6 @@
+Java 8 meta space : 
+
+From Java 8 PermGen was replaced by a new memory area called Metaspace. 
+It has the same role as PermGen which is to store class metadata. 
+Metaspace is not part of the JVM heap, but is allocated in native operating system memory. 
+It can auto-increase as needed to load additional class metadata.
