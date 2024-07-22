@@ -1,185 +1,204 @@
-HashMap Internal Structure :
-	. HashMap stores the data in the form of key-value pairs. 
-	. Each key-value pair is stored in an object of Entry<K, V> class. 
+HashMap : 
+	A HashMap is a data structure that stores key-value pairs. It's based on the concept of hashing, which provides efficient insertion, search, and deletion operations.
+
+Key Components :
+	. Key: The unique identifier for a value.
+	. Value: The data associated with a key.
+	. Bucket Array: An array of linked lists.
+	. Hash Function: A function that converts keys into integer indices (bucket indices).
 	
-	Entry<K, V> class is the static inner class of HashMap which is defined like below.
 	
-		static class Entry<K,V> implements Map.Entry<K,V> {
-			final K key;
-			V value;
+	
+HashMap Internal Working : 
+--------------------------
+
+HashMap<String, String> hashMap = new HashMap<>();
+
+	1. hashMap.put("KEY", "Value") :
+	  -----------------------------
+		"key" : must be an object, It can't be primitive data type.
+		
+		. hashMap uses a hash table, which is an array of buckets. 
+		. Each bucket can hold a linked list of key-value pairs (Entry objects).
+		
+		. All the java object are created in heap memory.
+		. hashMap is also an object, So in the heap memory JVM will create 16 buckets.
+						
+		.Now lets represent bucket in computer programming language .
+		The buckets form a hash table
+
+			+-------------------+
+			|       Bucket 1     |
+			+-------------------+
+			+-------------------+
+			|       Bucket 2     |
+			+-------------------+
+			+-------------------+
+			|       Bucket 3     |
+			+-------------------+
+			+-------------------+
+			|       Bucket 4     |
+			+-------------------+
+			+-------------------+
+			|       Bucket 5     |
+			+-------------------+
+			+-------------------+
+			|       Bucket 6     |
+			+-------------------+
+			+-------------------+
+			|       Bucket 7     |
+			+-------------------+
+			+-------------------+
+			|       Bucket 8     |
+			+-------------------+
+			+-------------------+
+			|       Bucket 9     |
+			+-------------------+
+			+-------------------+
+			|       Bucket 10    |
+			+-------------------+
+			+-------------------+
+			|       Bucket 11    |
+			+-------------------+
+			+-------------------+
+			|       Bucket 12    |
+			+-------------------+
+			+-------------------+
+			|       Bucket 13    |
+			+-------------------+
+			+-------------------+
+			|       Bucket 14    |
+			+-------------------+
+			+-------------------+
+			|       Bucket 15    |
+			+-------------------+
+			+-------------------+
+			|       Bucket 16    |
+			+-------------------+
 			
-			Entry<K,V> next;
-			int hash;
-	 
-			//Some methods are defined here
-		}
 		
-		As you see, this inner class has four fields. key, value, next and hash.
-
-			key : It stores the key of an element and its final.
-
-			value : It holds the value of an element.
-
-			next : It holds the pointer to next key-value pair. This attribute makes the key-value pairs stored as a linked list.
-
-			hash : It holds the hashcode of the key.
+		. Bucket :
+			. Bucket is nothing but a LinkedList(store the data in the form of node). 
+			Node consist of three things - predata and pointer 
+			. An array element within the HashMap that can hold multiple key-value pairs (usually in a linked list).
 			
+				+------------+     	    +------------+     	 	+------------+			+------------+
+				|P 	|Data|N  | ---->  	|P  |Data|N  | ---->  	|P 	|Data|N  | ---->  	|P  |Data|N  |
+				+------------+     	 	+------------+			+------------+			+------------+
+	
+
 			
-	These Entry objects are stored in an array called table[]. This array is initially of size 16. It is defined like below
-		
-		/*
-		The table, resized as necessary. Length MUST Always be a power of two.
-		*/
-		transient Entry<K,V>[] table;
-		
-		
-	To summarize the whole HashMap structure, each key-value pair is stored in an object of Entry<K, V> class. This class has an attribute called next which holds the pointer to next key-value pair. This makes the key-value pairs stored as a linked list. All these Entry<K, V> objects are stored in an array called table[].
-	
-	
-	
-
-What internally happens when JVM creates new HashMap :
-	HashMap<String, String> hshMap = new HashMap<>();
-	
-	
-.All the java object are created in heap memory.
-hashMap is an object, So in the heap memory JVM will create 16 buckets.
-
-.Now lets represent bucket in computer programming language .
-The buckets form a hash table
-
-	+-------------------+
-	|       Bucket 1     |
-	+-------------------+
-	+-------------------+
-	|       Bucket 2     |
-	+-------------------+
-	+-------------------+
-	|       Bucket 3     |
-	+-------------------+
-	+-------------------+
-	|       Bucket 4     |
-	+-------------------+
-	+-------------------+
-	|       Bucket 5     |
-	+-------------------+
-	+-------------------+
-	|       Bucket 6     |
-	+-------------------+
-	+-------------------+
-	|       Bucket 7     |
-	+-------------------+
-	+-------------------+
-	|       Bucket 8     |
-	+-------------------+
-	+-------------------+
-	|       Bucket 9     |
-	+-------------------+
-	+-------------------+
-	|       Bucket 10    |
-	+-------------------+
-	+-------------------+
-	|       Bucket 11    |
-	+-------------------+
-	+-------------------+
-	|       Bucket 12    |
-	+-------------------+
-	+-------------------+
-	|       Bucket 13    |
-	+-------------------+
-	+-------------------+
-	|       Bucket 14    |
-	+-------------------+
-	+-------------------+
-	|       Bucket 15    |
-	+-------------------+
-	+-------------------+
-	|       Bucket 16    |
-	+-------------------+
-	
-	
-.Load Factor :
-	If HashMap reaches more than 75%(Bucket 12) of it's capacity then it double the existing capacity(ie. 32).
-	
-	Load factor = 75% or 0.75 or 3/4
-	
-. Bucket :
-	Bucket is nothing but a LinkedList(store the data in the form of node). 
-	Node consist of two things - data and pointer 
-	
-		+---------+     	+---------+     	+---------+     	+---------+
-		| Data  |P| ----> | Data    |P| ----> | Data    |P| ---->   | Data  |P|
-		+---------+     	+---------+     	+---------+     	+---------+
-				|					|                 	|					|
-				head				next             	next				(null)
+	2. Find hashCode : 
+		-----------------------
+		At first JVM will get the hash code value of key using the hashCode() method.
+		hashCode() method is come from Object class so that we can not use primitive types as key.
+			
+			"KEY".hashCode(); // == hash code value
+			
+			"FB".hashCode(); // == 2236
+			"LD".hashCode(); // == 2424
 				
+		Hashing: 
+			When a key-value pair is inserted, the hash function(convert large value into smaller value) calculates a hash code(integer value generated from a key, used for indexing) based on the key. 
+			This hash code is then used to determine the bucket index where the pair will be stored.
+			Should be work in O(1) or O(length) for string. But O(length) not preffered.
+			
+			h(input) = output
+			h(input) = output1 // never happen
+			h(input) = output
+			h(input1) = output/output1 // can have same/different output for different input 
+			
+			
+			. For integer key : 
+				weighted sum : h(key) = key % m  
+				//where m is a prime number. If you're using a hash table, m is often chosen to be the size of the hash table.
+			
+			. For String keys : 
+				weighted sum : h("key") = (ASC[0]*x⁰ + ASC[1]*x¹ + ASC[2]*x²) / m
+			
+			. For object keys : weighted sum : 
+				Simple Sum : Add the hash codes of all significant fields.
+					h(object) = hash(field1) + hash(field2) + ... + hash(fieldN)
+				Weighted Sum : Assign weights to different fields based on their importance.
+					h(object) = weight1 * hash(field1) + weight2 * hash(field2) + ... + weightN * hash(fieldN)
+				XOR-Based Combination : Combine hash codes using XOR for better distribution.
+					h(object) = hash(field1) ^ hash(field2) ^ ... ^ hash(fieldN)
+					
+					
+			
+		.Load Factor :
+			If HashMap reaches more than 75%(Bucket 12) of it's capacity then it double the existing capacity(ie. 32).
+			
+			Load factor = 75% or 0.75 or 3/4
+	
+	3. Bucket Selection: 
+		The calculated hash code is typically subjected to a modulo operation with the size of the bucket array to obtain the final bucket index.
+		
+		find bucket index :  
+		---------------------------
+				bucket index is the bitwise AND operation value of hashCode with (bucket size - 1).
+		
+				hashcode & (bucket size - 1) = bucket index
 				
+				. 2236 & (16-1) = 12
+					
+					Let's convert 2236 and 15 to binary:
+						2236 = 10001101100
+						15 = 00001111
+						Performing the bitwise AND operation :
+
+							10001101100
+						& 	   00001111
+							-----------
+							   00001100 = 12
+							-----------
+
+				. 2424 & (16-1) = 8
+	
+	4. Collision Handling: 
+		If multiple keys hash have the same bucket index, a collision occurs. HashMaps usually handle collisions using linked lists. The key-value pairs are stored in a linked list at that bucket index.
+		
+		find hash collision : 
+		---------------------
+			If multiple keys hash code value has the same bucket index, then this condition is known as the hash collision.
+		
+				"FB".hashCode() == 2236
+				2236 & 15 = 12
 				
+				"Ea".hashCode() == 2236
+				2236 & 15 = 12
+		
+	5. If there is no hash collision : 
+		Simply add hash code value to bucket(LinkedList) as first node at there bucket index.
 	
+	
+	6. If there is hash collision : 
+		Compare the key with existing key using "key".equals("existing-key") method.
+		If present keys and existing are equal then replace existing node with present node, otherwise add key to next node of that bucket index.
+	
+	5. Retrieval: 
+		To retrieve a value, the hash function is applied to the key to find the corresponding bucket index. The linked list at that index is then traversed to find the key-value pair
+		
+		Searching in Linked List: 
+			We have to traverse the list one by one from the begning in Linked List.
+			And that is the only drawback of the LinkedList because it reduces the performance.
+			
+		map.get("key") : traversing is very fast for hash map because of time complexity is O(1).
+		----------------
+			. map.get("Ea");
+				step-1. HashCode of Ea = 2236
+				step-2. Find bucket index = 12
+				step-3. Goto bucket index(12) and get the key-value pair.:
+					Ideally one bucket contains one node but due to collision bucket has multiple node which reduces performance. That's why hashMap is inhanced in java8 using TREEIFY_THRESHOLD.
+					
+					TREEIFY_THRESHOLD : If there is more than 8 nodes in a bucket then HahMap is reached to TREEIFY_THRESHOLD.Now change the LinkedList implementation with self balancing tree(O() -> log1+len(len)). JVM uses compareTo() method to check the order of items.
+					
+					. tree is also called red-black tree or binary search tree or self balancing tree.
+					
+				step-4. retun value.
 
-. 
-	+-------------------+	
-	|       Bucket 1     |
-	+-------------------+ 	
-			===
-	---------------------
-	|					|
-	|	 ---	 ---	|
-	|	|	|-->|	|	|
-	|	 ---	 ---	|
-	|					|
-	---------------------
-	
-	
-. hashMap.put("KEY", "Value") :
-	"key" : must be an object, It can't be primitive data type.
-	
-	
-	Internal Implementation :
-	Step-1. find hashCode. 
-			At first JVM will get the Hash code of key.
-			
-			"KEY".hashCode();
-			
-			"FB".hashCode() == 2236
-			"LD".hashCode() == 2424
-			
-			hashCode() is come from Object class so that we can not use key as primitive type.
-	
-	Step-2. find bucket index.
-			hashcode & (length-1) = bucket index
-			
-			2236 & (16-1) = 12
-			2424 & 15 = 8
-			
+=================================================================================================================================
 
-
-Hashing : Hashing has a function hash which convert large value into smaller value. Should be work in O(1) or O(length) for string
-	h(input) = output
-	h(input) = output1 // never happen
-	h(input) = output
-	h(input1) = output/output1 // can have same/different output for different input 
-	
-	
-	for integer key : h(key) = key/m
-	for String keys : weighted sum - h("key") = (ASC[0]*x⁰+ASC[1]*x¹+ASC[2]*x²)/m
-	for object keys : weighted sum -
-	
-			
-. hash collision:
-	
-			"FB".hashCode() == 2236
-			2236 & 15 = 12
-			
-			"Ea".hashCode() == 2236
-			2236 & 15 = 12
-			
-			when JVM wants to put a key-value pair in a bucket and the bucket is already having one or more than one node then this condition is known as the hash collision
-			
-			In this case JVM will check whether same key is already present or not. If the same key is present then JVM will replace the existing node with new key-value pair . If key of existing node is not equal to new key of new key-value pair that we are trying to insert then in that case new key-value pair will be added as the second node of LinkedList.
-			
-			
-			
 Summary : 
 
 	hashMap.put("key", "value");	--->	Find hashCode() of the key : "key".hashCode(); 
@@ -195,33 +214,3 @@ Summary :
 														|
 														|
 														Yes (Add to LinkedList by replacing existing equal node )
-														
-														
-================================================================
-
-Searching in Linked List: 
-	We have to traverse the list one by one from the begning in Linked List.
-	And that is the only drawback of the LinkedList because it reduces the performance.
-	
-
-map.get("key") : traversing is very fast for hash map because of time complexity is O(1).
------------------
-
-	map.get("Ea");
-	
-		step-1. HashCode of Ea = 2236
-		step-2. Find bucket index = 12
-		step-3. Goto bucket index(12) and get the key-value pair.:
-			Ideally one bucket contains one node but due to collision bucket has multiple node which reduces performance. That's why hashMap is inhanced in java8 using TREEIFY_THRESHOLD.
-			
-			TREEIFY_THRESHOLD : If there is more than 8 nodes in a bucket then HahMap is reached to TREEIFY_THRESHOLD.Now change the LinkedList implementation with self balancing tree(O() -> log1+len(len)). JVM uses compareTo() method to check the order of items.
-			
-			tree is also called red-black tree or binary search tree or self balancing tree.
-				
-			
-		step-4. retun value.
-		
-		
-		
-		
-		
